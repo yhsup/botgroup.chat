@@ -10,6 +10,9 @@
   "dependencies": {
     "@alicloud/credentials": "^2.4.2",
     "@alicloud/dysmsapi20170525": "^3.1.1",
+    "@clerk/clerk-react": "^5.2.0",
+    "@alicloud/credentials": "^2.4.2",
+    "@alicloud/dysmsapi20170525": "^3.1.1",
     "@fontsource/audiowide": "^5.1.1",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-dialog": "^1.1.6",
