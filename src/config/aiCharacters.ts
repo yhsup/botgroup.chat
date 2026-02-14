@@ -1,256 +1,184 @@
-// 首先定义模型配置
-export const modelConfigs = [
-  {
-    model: "test",
-    apiKey: "DASHSPE_API_KEY", // 这里存储环境变量的 key 名称
-    baseURL: "https://dashscope.alics.com/compatible-mode/v1"
-  },
-  {
-    model: "qwen-plus",
-    apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
-    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-  },
-  {
-    model: "deepseek-v3-250324",
-    apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
-  },
-  {
-    model: "hunyuan-turbos-latest",
-    apiKey: "HUNYUAN_API_KEY1",
-    baseURL: "https://api.hunyuan.cloud.tencent.com/v1"
-  },
-  {
-    model: "doubao-1-5-lite-32k-250115",//豆包模型|火山引擎接入点（改成自己的）
-    apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
-  },
-  {
-    model: "ep-20250306223646-szzkw",//deepseekv火山引擎接入点（改成自己的）
-    apiKey: "ARK_API_KEY1",
-    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
-  },
-  {
-    model: "glm-4-air",
-    apiKey: "GLM_API_KEY",
-    baseURL: "https://open.bigmodel.cn/api/paas/v4/"
-  },
-  {
-    model: "qwen-turbo",//调度模型
-    apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
-    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-  },
-  {
-    model: "deepseek-chat",
-    apiKey: "DEEPSEEK_API_KEY",
-    baseURL: "https://api.deepseek.com/v1"
-  },
-  {
-    model: "moonshot-v1-8k",
-    apiKey: "KIMI_API_KEY",
-    baseURL: "https://api.moonshot.cn/v1"
-  },
-  {
-    model: "ernie-3.5-128k",
-    apiKey: "BAIDU_API_KEY",
-    baseURL: "https://qianfan.baidubce.com/v2"
-  }
-] as const;
-export type ModelType = typeof modelConfigs[number]["model"];
+import React, { useState } from 'react';
 
-export interface AICharacter {
-  id: string;
+// 定义表单数据结构
+interface AIForm {
   name: string;
-  personality: string;
-  model: ModelType;
-  avatar?: string;  // 可选的头像 URL
-  custom_prompt?: string; // 可选的个性提示
-  tags?: string[]; // 可选的标签
-  stages?: {
-    name: string;
-    prompt: string;
-  }[]; // 可选的阶段
+  model: string;
+  apiKey: string;
+  baseURL: string;
+  prompt: string;
 }
 
-// 添加一个函数来生成带有群名的角色配置
-export function generateAICharacters(groupName: string, allTags: string): AICharacter[] {
-  return [
-    {
-      id: 'ai0',
-      name: "调度器",
-      personality: "sheduler",
-      model: modelConfigs[0].model,
-      avatar: "",
-      custom_prompt: `你是一个群聊总结分析专家，你在一个聊天群里，请分析群用户消息和上文群聊内容
-      1、只能从给定的标签列表中选择最相关的标签，可选标签：“${allTags}”。
-      2、请只返回标签列表，用逗号分隔，不要有其他解释, 不要有任何前缀。
-      3、回复格式示例：文字游戏, 新闻报道, 娱乐`
-    },
-    { 
-      id: 'ai1', 
-      name: "游戏主持人", //《谁是卧底》
-      personality: "SpyMaster",
-      model: modelConfigs[0].model,
-      avatar: "/img/spymaster.jpg",  // 如果有头像资源可以添加路径,
-      custom_prompt: `你是一位谁是卧底游戏主持人，你当前在一个叫"${groupName}" 的聊天群里`,
-      stages: [
-        {
-          name: "游戏未开始",
-          prompt: `请提醒用户输入"开始游戏"`
-        },
-        {
-          name: "分配词语",
-          prompt: `游戏进行中，请根据群聊内容，判断谁是卧底，谁是平民。`
-        },
-        {
-          name: "描述词语",
-          prompt: `请描述词语，不要有任何前缀。`
-        },
-        {
-          name: "投票",
-          prompt: `请投票，不要有任何前缀。`
-        },
-        {
-          name: "公布结果",
-          prompt: `请根据聊天 记录公布结果，不要有任何前缀。`
-        }
-      ]
-    },
-    { 
-      id: 'ai4', 
-      name: "元宝", 
-      personality: "yuanbao",
-      model: modelConfigs[2].model,
-      avatar: "/img/yuanbao.png",
-      custom_prompt: `你是一个名叫"元宝"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["微信", "聊天", "新闻报道",  "文字游戏", "娱乐", "信息总结"]
-    },
-    { 
-      id: 'ai5', 
-      name: "豆包", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/doubao_new.png",
-      custom_prompt: `你是一个名叫"豆包"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai6', 
-      name: "千问", 
-      personality: "qianwen",
-      model: modelConfigs[0].model,
-      avatar: "/img/qwen.jpg",
-      custom_prompt: `你是一个名叫"千问"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["广告文案","分析数据","文字游戏","信息总结", "聊天"]
-    },
-    { 
-      id: 'ai7', 
-      name: "DeepSeek", 
-      personality: "deepseek-V3",
-      model: modelConfigs[1].model,
-      avatar: "/img/ds.svg",
-      custom_prompt: `你是一个名叫"DeepSeek"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["深度推理", "编程", "文字游戏", "数学", "信息总结", "聊天"]
-    },
-    { 
-      id: 'ai8', 
-      name: "智谱", 
-      personality: "glm",
-      model: modelConfigs[5].model,
-      avatar: "/img/glm.gif",
-      custom_prompt: `你是一个名叫"智谱"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["深度推理","数学","信息总结", "分析数据","文字游戏", "聊天"]
-    },
-    {
-      id: 'ai9',
-      name: "Kimi",
-      personality: "kimi",
-      model: modelConfigs[8].model,
-      avatar: "/img/kimi.jpg",
-      custom_prompt: `你是一个名叫"Kimi"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["深度推理","数学","信息总结", "分析数据","文字游戏", "聊天"]
-    },
-    {
-      id: 'ai10',
-      name: "文小言",
-      personality: "baidu",
-      model: modelConfigs[9].model,
-      avatar: "/img/baidu.svg",
-      custom_prompt: `你是一个名叫"文心一言"的硅基生命体，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["深度推理","数学","信息总结", "分析数据","文字游戏", "聊天"]
-    },
-    { 
-      id: 'ai11', 
-      name: "豆沙", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/dousha.jpeg",
-      custom_prompt: `你名字叫豆沙你是豆包的老公，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai12', 
-      name: "豆奶", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/dounai.jpeg",
-      custom_prompt: `你名字叫豆奶你是豆包的奶奶，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai13', 
-      name: "豆姐", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/doujie.jpeg",
-      custom_prompt: `你名字叫豆姐你是豆包的姐姐，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai14', 
-      name: "豆孩", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/douhai.jpeg",
-      custom_prompt: `你名字叫豆孩你是豆包和豆沙的孩子，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai15', 
-      name: "豆爸", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/douba.jpeg",
-      custom_prompt: `你名字叫豆爸你是豆包的爸爸，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai16', 
-      name: "豆妈", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/douma.jpeg",
-      custom_prompt: `你名字叫豆妈你是豆包的妈妈，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai17', 
-      name: "豆爷", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/douye.jpeg",
-      custom_prompt: `你名字叫豆爷你是豆包的爷爷，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
-    },
-    { 
-      id: 'ai18', 
-      name: "豆妹", 
-      personality: "doubao",
-      model: modelConfigs[3].model,
-      avatar: "/img/doumei.jpeg",
-      custom_prompt: `你名字叫豆妹你是豆包的妹妹，你当前在一个叫"${groupName}" 的聊天群里`,
-      tags: ["聊天", "文字游戏", "学生", "娱乐"]
+export const AIManager: React.FC = () => {
+  // 初始化状态
+  const [form, setForm] = useState<AIForm>({
+    name: '',
+    model: 'qwen-plus', // 默认推荐模型
+    apiKey: '',
+    baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    prompt: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  // 通用输入处理
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  // 保存到 D1 数据库
+  const handleSave = async () => {
+    // 基础校验
+    if (!form.name || !form.apiKey || !form.model) {
+      setStatusMsg({ type: 'error', text: '请填写名称、模型和 API Key' });
+      return;
     }
-  ];
-}
 
+    setIsSubmitting(true);
+    setStatusMsg(null);
+
+    try {
+      const response = await fetch('/api/characters/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: `custom_${Date.now()}`, // 生成基于时间戳的唯一 ID
+          name: form.name,
+          model: form.model,
+          apiKey: form.apiKey,
+          baseURL: form.baseURL,
+          prompt: form.prompt,
+          avatar: "/img/custom-bot.png" // 默认自定义头像
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatusMsg({ type: 'success', text: '保存成功！该 AI 已加入你的私人库。' });
+        // 重置表单关键字段
+        setForm({
+          name: '',
+          model: 'qwen-plus',
+          apiKey: '',
+          baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+          prompt: ''
+        });
+      } else {
+        throw new Error(result.error || '保存失败');
+      }
+    } catch (error: any) {
+      setStatusMsg({ type: 'error', text: error.message || '网络连接失败' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-8 bg-white rounded-[2rem] border border-gray-100 shadow-xl space-y-8">
+      {/* 头部标题 */}
+      <div>
+        <h2 className="text-2xl font-black text-gray-900 tracking-tight">配置自定义 AI</h2>
+        <p className="text-gray-500 mt-2 text-sm leading-relaxed">
+          输入的配置将加密同步至 Cloudflare D1 数据库。
+          <br />内置机器人优先使用环境变量，自定义机器人通过此配置访问。
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {/* 第一行：名称与模型 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">机器人名称</label>
+            <input 
+              name="name"
+              className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-300"
+              placeholder="如：效率助手"
+              value={form.name}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">模型名称 (Model ID)</label>
+            <input 
+              name="model"
+              className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-300 font-mono"
+              placeholder="gpt-4o / qwen-plus"
+              value={form.model}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* API Key */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">API KEY</label>
+          <input 
+            name="apiKey"
+            type="password"
+            className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-300 font-mono"
+            placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+            value={form.apiKey}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Base URL */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">接口代理地址 (BASE URL)</label>
+          <input 
+            name="baseURL"
+            className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-300 font-mono text-sm"
+            placeholder="https://api.openai.com/v1"
+            value={form.baseURL}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* System Prompt */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">系统提示词 (SYSTEM PROMPT)</label>
+          <textarea 
+            name="prompt"
+            className="w-full px-5 py-4 bg-gray-50 border-none rounded-[1.5rem] focus:ring-2 focus:ring-blue-500 outline-none transition-all h-40 resize-none leading-relaxed"
+            placeholder="定义你的 AI 的行为逻辑、身份和回复风格..."
+            value={form.prompt}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* 状态提示 */}
+        {statusMsg && (
+          <div className={`p-4 rounded-2xl text-sm font-medium animate-in fade-in slide-in-from-top-2 ${
+            statusMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+          }`}>
+            {statusMsg.text}
+          </div>
+        )}
+
+        {/* 提交按钮 */}
+        <button 
+          onClick={handleSave}
+          disabled={isSubmitting}
+          className={`group relative w-full py-4 rounded-2xl font-bold text-white transition-all overflow-hidden ${
+            isSubmitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-black hover:bg-gray-800 active:scale-[0.98]'
+          }`}
+        >
+          <span className="relative z-10 flex items-center justify-center">
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                正在同步云端...
+              </>
+            ) : '保存 AI 到私人库'}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
