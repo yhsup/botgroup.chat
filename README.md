@@ -39,6 +39,7 @@
      - Build output directory: `dist`
      - 设置环境变量（必须）：
        ```
+       VITE_CLERK_PUBLISHABLE_KEYY=xxx //clerk公钥，文本
         DASHSCOPE_API_KEY=xxx //千问模型KEY
         HUNYUAN_API_KEY=xxx //混元模型KEY
         ARK_API_KEY=xxx //豆包模型KEY
